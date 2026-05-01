@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ product.name }} | Hop & Barley{% endblock %}
+{% block content %}
+<main class="container" style="padding: 30px 0;">
+  <section class="product-card" style="display:block; max-width: 900px; margin: auto; padding: 24px;">
+    {% if product.image %}
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-card__image" style="max-height: 360px; object-fit: cover;">
+    {% else %}
+    <img src="{% static 'img/products/citra_hops.jpg' %}" alt="{{ product.name }}" class="product-card__image" style="max-height: 360px; object-fit: cover;">
+    {% endif %}
+    <h1>{{ product.name }}</h1>
+    <p>{{ product.description }}</p>
+    <p><strong>${{ product.price }}</strong> | Stock: {{ product.stock }}</p>
+
+    <form action="{% url 'add-to-cart' product.id %}" method="post">
+      {% csrf_token %}
+      <input type="number" name="quantity" min="1" max="{{ product.stock }}" value="1">
+      <button type="submit" class="button button--primary">Add to Cart</button>
+    </form>
+  </section>
+
+  <section style="max-width: 900px; margin: 30px auto;">
+    <h2>Reviews</h2>
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'product-review-create' product.slug %}">
+      {% csrf_token %}
+      {{ review_form.as_p }}
+      <button type="submit" class="button button--secondary">Send review</button>
+    </form>
+    {% else %}
+    <p><a href="{% url 'login' %}">Sign in</a> to leave a review.</p>
+    {% endif %}
+
+    {% for item in reviews %}
+      <article>
+        <strong>{{ item.user.username }}</strong> — {{ item.rating }}/5
+        <p>{{ item.comment }}</p>
+      </article>
+    {% empty %}
+      <p>No reviews yet.</p>
+    {% endfor %}
+  </section>
+</main>
+{% endblock %}

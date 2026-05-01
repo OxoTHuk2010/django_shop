@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Account | Hop & Barley{% endblock %}
+{% block content %}
+<main class="container" style="padding: 30px 0;">
+  <h1>My account</h1>
+  <p>Orders count: {{ orders_count }}</p>
+  <p>Total spent: ${{ orders_total }}</p>
+  <h2>Order history</h2>
+  {% for order in orders %}
+    <article class="product-card" style="display:block; margin-bottom: 12px; padding: 12px;">
+      <strong>Order #{{ order.id }}</strong> — {{ order.status }} — ${{ order.total_price }}
+      <ul>
+        {% for item in order.items.all %}
+          <li>{{ item.product.name }} x {{ item.quantity }} (at ${{ item.price }})</li>
+        {% endfor %}
+      </ul>
+    </article>
+  {% empty %}
+    <p>No orders yet.</p>
+  {% endfor %}
+</main>
+{% endblock %}

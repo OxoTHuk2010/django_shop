@@ -1,0 +1,72 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Hop & Barley{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+<header>
+  <div class="header-container">
+    <a href="{% url 'product-list' %}" class="header__logo">
+      <img src="{% static 'img/logo.svg' %}" alt="Hop & Barley Logo">
+      <p class="logo-text">Hop & Barley</p>
+    </a>
+    <nav class="header__nav">
+      <ul>
+        <li><a href="{% url 'product-list' %}">Products</a></li>
+        <li><a href="{% url 'guides-recipes' %}">Guides & Recipes</a></li>
+      </ul>
+    </nav>
+
+    {% if user.is_authenticated %}
+    <div class="header__user-actions" id="auth-user">
+      <a href="{% url 'account' %}" class="user-icon" aria-label="My Account">
+        <img src="{% static 'img/icons/User_alt.svg' %}" alt="User Account">
+      </a>
+      <a href="{% url 'cart' %}" class="cart-icon" aria-label="Shopping Cart">
+        <img src="{% static 'img/icons/Shopping_bag.svg' %}" alt="Shopping Cart">
+      </a>
+      <a href="{% url 'logout' %}" class="button button--secondary">Logout</a>
+    </div>
+    {% else %}
+    <div class="header__auth-buttons" id="auth-guest">
+      <a href="{% url 'login' %}" class="button button--secondary">Sign in</a>
+      <a href="{% url 'register' %}" class="button button--primary">Register</a>
+    </div>
+    {% endif %}
+  </div>
+</header>
+
+{% if messages %}
+<div class="container" style="padding-top: 10px;">
+  {% for message in messages %}
+    <p>{{ message }}</p>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+<footer>
+  <img src="{% static 'img/background/image-footer.svg' %}" alt="Hop & Barley Hops Logo" class="footer__hops-logo">
+  <nav class="footer__nav">
+    <ul>
+      <li><a href="#">Contact</a></li>
+      <li><a href="#">FAQ</a></li>
+      <li><a href="#">Community</a></li>
+      <li><a href="#">Resources</a></li>
+      <li><a href="#">License</a></li>
+    </ul>
+  </nav>
+  <p class="footer__copyright">&copy; Hop & Barley 2026. All rights reserved</p>
+</footer>
+<script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

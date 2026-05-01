@@ -1,0 +1,89 @@
+stages:
+  - verify
+  - lint
+  - test
+  - build
+  - deploy
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  POSTGRES_DB: myshop
+  POSTGRES_USER: myshop
+  POSTGRES_PASSWORD: myshop
+  DB_NAME: myshop
+  DB_USER: myshop
+  DB_PASSWORD: myshop
+  DB_HOST: postgres
+  DB_PORT: "5432"
+  DJANGO_SETTINGS_MODULE: config.settings.base
+
+cache:
+  paths:
+    - .cache/pip
+
+.verify_python:
+  image: python:3.12
+  before_script:
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt
+
+verify_encoding:
+  stage: verify
+  extends: .verify_python
+  script:
+    - python scripts/verify_encoding.py
+
+lint:
+  stage: lint
+  extends: .verify_python
+  script:
+    - flake8 .
+    - mypy . || true
+
+test:
+  stage: test
+  extends: .verify_python
+  services:
+    - name: postgres:16
+      alias: postgres
+  script:
+    - python manage.py migrate --noinput
+    - pytest --junitxml=report.xml
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+
+build:
+  stage: build
+  image: docker:27
+  services:
+    - docker:27-dind
+  variables:
+    DOCKER_DRIVER: overlay2
+    IMAGE_TAG: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+  script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+    - docker build -t "$IMAGE_TAG" .
+    - docker push "$IMAGE_TAG"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# Required variables (set in GitLab CI/CD settings):
+# DEPLOY_SSH_HOST, DEPLOY_SSH_PORT, DEPLOY_SSH_USER, DEPLOY_SSH_KEY
+# DEPLOY_APP_DIR, DEPLOY_ENV_FILE_CONTENT
+
+deploy:
+  stage: deploy
+  image: alpine:3.20
+  before_script:
+    - apk add --no-cache openssh-client bash
+    - mkdir -p ~/.ssh
+    - echo "$DEPLOY_SSH_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+  script:
+    - echo "Deploy skeleton is ready. VM-specific rollout will be added after VM details are provided."
+    - echo "Target host: $DEPLOY_SSH_HOST:$DEPLOY_SSH_PORT user=$DEPLOY_SSH_USER"
+  when: manual
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
