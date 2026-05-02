@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
+from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
+from django.test.utils import override_settings
 from rest_framework.test import APIClient
 
 from orders.cart import add_to_cart
@@ -33,6 +35,16 @@ class CheckoutServiceTests(TestCase):
         add_to_cart(session, self.product.id, 10)
         with self.assertRaises(CheckoutError):
             create_order_from_session_cart(user=self.user, session=session, shipping_address="Main")
+
+    @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+    def test_checkout_sends_email_notifications(self):
+        self.user.email = "buyer@example.com"
+        self.user.save(update_fields=["email"])
+        session = self.client.session
+        add_to_cart(session, self.product.id, 1)
+        create_order_from_session_cart(user=self.user, session=session, shipping_address="Main street 1")
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Order #", mail.outbox[0].subject)
 
 
 class ReviewConstraintTests(TestCase):

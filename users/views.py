@@ -2,9 +2,11 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Sum
 from django.urls import reverse_lazy
-from django.views.generic import FormView, TemplateView
+from django.views.generic import FormView, TemplateView, UpdateView
 
 from orders.models import Order
+
+from .forms import ProfileForm
 
 
 class RegisterView(FormView):
@@ -31,6 +33,15 @@ class AccountView(LoginRequiredMixin, TemplateView):
         context["orders_count"] = orders.count()
         context["orders_total"] = orders.aggregate(total=Sum("total_price"))["total"] or 0
         return context
+
+
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    form_class = ProfileForm
+    template_name = "users/profile_edit.html"
+    success_url = reverse_lazy("account")
+
+    def get_object(self, queryset=None):
+        return self.request.user
 
 
 class ForgotPasswordView(TemplateView):
