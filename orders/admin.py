@@ -15,6 +15,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_filter = ("status", "created_at")
     search_fields = ("user__username", "user__email")
     inlines = [OrderItemInline]
+    change_list_template = "admin/orders/order/change_list.html"
 
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}

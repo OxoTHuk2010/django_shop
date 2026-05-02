@@ -43,6 +43,8 @@ class ProductListView(ListView):
             queryset = queryset.order_by("-popularity")
         elif sort == "new":
             queryset = queryset.order_by("-created_at")
+        else:
+            queryset = queryset.order_by("-created_at")
 
         return queryset.annotate(avg_rating=Avg("reviews__rating"))
 
