@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  DJANGO_SETTINGS_MODULE: config.settings.base
+  DJANGO_SETTINGS_MODULE: config.settings.dev
 
 concurrency:
   group: production-deploy

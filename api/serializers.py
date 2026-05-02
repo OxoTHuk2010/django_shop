@@ -18,6 +18,17 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
+class UserMeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "username", "email", "first_name", "last_name")
+
+
+class UserPasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True, min_length=8)
+    new_password = serializers.CharField(write_only=True, min_length=8)
+
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product

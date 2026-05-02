@@ -25,6 +25,8 @@ from .serializers import (
     ProductSerializer,
     ReviewSerializer,
     UserRegisterSerializer,
+    UserMeSerializer,
+    UserPasswordChangeSerializer,
 )
 
 
@@ -32,6 +34,41 @@ class UserRegisterAPIView(generics.CreateAPIView):
     queryset = User.objects.none()
     serializer_class = UserRegisterSerializer
     permission_classes = [permissions.AllowAny]
+
+
+class UserMeAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(summary="Get current user profile", responses=UserMeSerializer)
+    def get(self, request):
+        return Response(UserMeSerializer(request.user).data)
+
+    @extend_schema(summary="Update current user profile", request=UserMeSerializer, responses=UserMeSerializer)
+    def patch(self, request):
+        serializer = UserMeSerializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
+class UserPasswordChangeAPIView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    @extend_schema(
+        summary="Change current user password",
+        request=UserPasswordChangeSerializer,
+        responses={200: inline_serializer(name="PasswordChangeOk", fields={"detail": serializers.CharField()})},
+    )
+    def post(self, request):
+        serializer = UserPasswordChangeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        if not request.user.check_password(serializer.validated_data["old_password"]):
+            return Response({"old_password": ["Invalid password"]}, status=400)
+
+        request.user.set_password(serializer.validated_data["new_password"])
+        request.user.save(update_fields=["password"])
+        return Response({"detail": "Password changed"})
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
