@@ -105,5 +105,9 @@ class CartAPIView(APIView):
         product_id = request.query_params.get("product_id")
         if not product_id:
             return Response({"detail": "product_id is required"}, status=400)
-        update_cart_item(request.session, int(product_id), 0)
+        try:
+            parsed_product_id = int(product_id)
+        except (TypeError, ValueError):
+            return Response({"detail": "product_id must be integer"}, status=400)
+        update_cart_item(request.session, parsed_product_id, 0)
         return Response(status=status.HTTP_204_NO_CONTENT)
