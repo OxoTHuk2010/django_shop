@@ -65,9 +65,6 @@ services:
     volumes:
       - ./deploy/letsencrypt:/etc/letsencrypt
       - certbot_www:/var/www/certbot
-    entrypoint: ["/bin/sh", "-c"]
-    command: ["trap exit TERM; while :; do sleep 1; done"]
-    restart: unless-stopped
 
 volumes:
   postgres_data:
