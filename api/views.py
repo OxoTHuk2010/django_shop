@@ -129,8 +129,19 @@ class ProductReviewView(APIView):
         serializer.is_valid(raise_exception=True)
         if not Order.objects.filter(user=request.user, items__product_id=product_id).exists():
             return Response({"detail": "Purchase required before review"}, status=400)
-        serializer.save(user=request.user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        review, created = Review.objects.update_or_create(
+            product_id=product_id,
+            user=request.user,
+            defaults={
+                "rating": serializer.validated_data["rating"],
+                "comment": serializer.validated_data["comment"],
+            },
+        )
+        response_serializer = ReviewSerializer(review)
+        return Response(
+            response_serializer.data,
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
+        )
 
 
 @extend_schema_view(
