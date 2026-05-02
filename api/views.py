@@ -28,7 +28,7 @@ class UserRegisterAPIView(generics.CreateAPIView):
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Product.objects.filter(is_active=True).select_related("category")
+    queryset = Product.objects.filter(is_active=True).select_related("category").order_by("-created_at")
     serializer_class = ProductSerializer
     filterset_fields = ("category",)
     search_fields = ("name", "description")
@@ -40,7 +40,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user).prefetch_related("items")
+        return Order.objects.filter(user=self.request.user).prefetch_related("items").order_by("-created_at")
 
     def create(self, request, *args, **kwargs):
         shipping_address = request.data.get("shipping_address", "")

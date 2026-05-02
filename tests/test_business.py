@@ -96,4 +96,4 @@ class ApiOwnershipTests(TestCase):
         self.client_api.force_authenticate(self.user2)
         response = self.client_api.get("/api/orders/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.json()), 0)
+        self.assertEqual(response.json()["count"], 0)
