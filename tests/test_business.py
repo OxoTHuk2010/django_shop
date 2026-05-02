@@ -15,9 +15,14 @@ from reviews.models import Review
 class CheckoutServiceTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="buyer", password="pass123456")
-        self.category = Category.objects.create(name="Hops", slug="hops")
+        self.category = Category.objects.create(name="Hops Test", slug="hops-test")
         self.product = Product.objects.create(
-            name="Citra", slug="citra", description="desc", price="5.00", category=self.category, stock=3
+            name="Citra Test",
+            slug="citra-test",
+            description="desc",
+            price="5.00",
+            category=self.category,
+            stock=3,
         )
 
     def test_checkout_reduces_stock_and_creates_order(self):
@@ -50,9 +55,14 @@ class CheckoutServiceTests(TestCase):
 class ReviewConstraintTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="reviewer", password="pass123456")
-        self.category = Category.objects.create(name="Malts", slug="malts")
+        self.category = Category.objects.create(name="Malts Test", slug="malts-test")
         self.product = Product.objects.create(
-            name="Malt", slug="malt", description="desc", price="3.00", category=self.category, stock=10
+            name="Malt Test",
+            slug="malt-test",
+            description="desc",
+            price="3.00",
+            category=self.category,
+            stock=10,
         )
 
     def test_review_requires_purchase(self):
