@@ -73,12 +73,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - run: python manage.py migrate --noinput
-      - run: pytest --junitxml=report.xml
+      - run: |
+          pytest \
+            --junitxml=report.xml \
+            --cov=. \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage.xml \
+            --cov-fail-under=70
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: pytest-report
           path: report.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage.xml
 
   deploy:
     runs-on: [self-hosted, Linux, X64]

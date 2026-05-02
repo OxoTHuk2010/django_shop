@@ -32,7 +32,7 @@ Workflow file: `.github/workflows/ci-cd.yml`
 Stages:
 1. `verify_encoding`
 2. `lint`
-3. `test` (PostgreSQL service)
+3. `test` (PostgreSQL service, coverage gate `>=70%`)
 4. `deploy` (self-hosted runner on VM, local docker compose rebuild)
 
 ## Local Debug -> Prod Flow
@@ -43,6 +43,7 @@ Before pushing to `main`, run local debug stack on this PC:
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T web python manage.py migrate --noinput
 docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T web pytest -q
+docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T web pytest --cov=. --cov-report=term-missing
 ```
 
 Stop local debug stack:
