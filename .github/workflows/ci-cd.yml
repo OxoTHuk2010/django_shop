@@ -86,6 +86,11 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment: production
     steps:
+      - name: Fix workspace permissions
+        run: |
+          if [ -d "$GITHUB_WORKSPACE" ]; then
+            sudo chown -R "$(id -u)":"$(id -g)" "$GITHUB_WORKSPACE" || true
+          fi
       - uses: actions/checkout@v4
       - name: Ensure Docker
         run: sudo bash deploy/bootstrap_vm.sh
