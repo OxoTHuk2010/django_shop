@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Register | Hop & Barley{% endblock %}
 {% block content %}
-<main class="container" style="padding: 30px 0; max-width: 600px;">
-  <h1>Register</h1>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="button button--primary">Create account</button>
-  </form>
+<main class="container auth-page">
+  <section class="auth-panel">
+    <p class="eyebrow">New brewer</p>
+    <h1>Create account</h1>
+    <form method="post" class="form-panel">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="button button--primary">Create account</button>
+    </form>
+  </section>
 </main>
 {% endblock %}

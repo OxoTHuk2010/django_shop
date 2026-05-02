@@ -1,23 +1,47 @@
 {% extends "base.html" %}
 {% block title %}Cart | Hop & Barley{% endblock %}
 {% block content %}
-<main class="container" style="padding: 30px 0;">
-  <h1>Shopping Cart</h1>
-  {% for item in items %}
-    <div class="product-card" style="display:block; margin-bottom: 14px; padding: 12px;">
-      <strong>{{ item.name }}</strong>
-      <p>Price: ${{ item.price }} | In stock: {{ item.stock }}</p>
-      <form method="post" action="{% url 'cart-update' item.product_id %}">
-        {% csrf_token %}
-        <input type="number" name="quantity" min="0" value="{{ item.quantity }}">
-        <button class="button button--secondary" type="submit">Update</button>
-      </form>
-      <p>Subtotal: ${{ item.subtotal }}</p>
+<main class="container page-shell">
+  <div class="page-heading">
+    <p class="eyebrow">Your order</p>
+    <h1>Shopping cart</h1>
+  </div>
+
+  <section class="cart-layout">
+    <div class="cart-items">
+      {% for item in items %}
+      <article class="cart-item">
+        <div>
+          <strong>{{ item.name }}</strong>
+          <p>${{ item.price }} each | {{ item.stock }} in stock</p>
+        </div>
+        <form method="post" action="{% url 'cart-update' item.product_id %}" class="cart-item__form">
+          {% csrf_token %}
+          <label>
+            Qty
+            <input type="number" name="quantity" min="0" value="{{ item.quantity }}">
+          </label>
+          <button class="button button--secondary" type="submit">Update</button>
+        </form>
+        <strong>${{ item.subtotal }}</strong>
+      </article>
+      {% empty %}
+      <div class="empty-state">
+        <h2>Cart is empty</h2>
+        <p>Add brewing supplies from the catalog to start checkout.</p>
+        <a class="button button--primary" href="{% url 'product-list' %}">Open catalog</a>
+      </div>
+      {% endfor %}
     </div>
-  {% empty %}
-    <p>Cart is empty.</p>
-  {% endfor %}
-  <h2>Total: ${{ total }}</h2>
-  <a class="button button--primary" href="{% url 'checkout' %}">Checkout</a>
+
+    <aside class="order-summary">
+      <p class="eyebrow">Summary</p>
+      <h2>Total: ${{ total }}</h2>
+      {% if items %}
+      <a class="button button--primary" href="{% url 'checkout' %}">Checkout</a>
+      {% endif %}
+      <a class="button button--secondary" href="{% url 'product-list' %}">Continue shopping</a>
+    </aside>
+  </section>
 </main>
 {% endblock %}

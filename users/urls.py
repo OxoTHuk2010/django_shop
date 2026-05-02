@@ -1,12 +1,16 @@
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from .views import AccountView, ForgotPasswordView, ProfileUpdateView, RegisterView
+from .views import AccountView, ForgotPasswordView, LogoutPostView, ProfileUpdateView, RegisterView
 
 urlpatterns = [
     path("account/register/", RegisterView.as_view(), name="register"),
-    path("account/login/", auth_views.LoginView.as_view(template_name="users/login.html"), name="login"),
-    path("account/logout/", auth_views.LogoutView.as_view(), name="logout"),
+    path(
+        "account/login/",
+        auth_views.LoginView.as_view(template_name="users/login.html", redirect_authenticated_user=True),
+        name="login",
+    ),
+    path("account/logout/", LogoutPostView.as_view(), name="logout"),
     path("account/profile/", ProfileUpdateView.as_view(), name="profile-edit"),
     path(
         "account/password-change/",

@@ -62,6 +62,7 @@ Production app container runs via `gunicorn` behind Nginx.
 - `CSRF_TRUSTED_ORIGINS` (comma-separated, example: `http://103.76.55.214`)
 - `SECURE_COOKIES` (`1` for HTTPS production, `0` for HTTP)
 - `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`
+- `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL`, `DJANGO_SUPERUSER_PASSWORD` for deploy-time admin provisioning
 
 ## HTTPS Domain (myshop.iiitopm.ru)
 
@@ -116,6 +117,8 @@ Production app container runs via `gunicorn` behind Nginx.
 - [x] Django templates render migrated pages from Hop-and-Barley style.
 - [x] REST API implemented for products/orders/cart/reviews/users register.
 - [x] JWT auth endpoints enabled and covered by tests.
+- [x] Web auth flow covered by tests (login `next`, POST logout).
+- [x] Catalog pagination supports configurable `per_page`.
 - [x] OpenAPI docs available at `/api/docs/`.
 - [x] PostgreSQL + Docker setup for local and production.
 - [x] GitHub Actions pipeline includes encoding/lint/test/deploy.

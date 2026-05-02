@@ -115,6 +115,9 @@ jobs:
           ALLOWED_HOSTS: myshop.iiitopm.ru,103.76.55.214,localhost,127.0.0.1
           CSRF_TRUSTED_ORIGINS: https://myshop.iiitopm.ru,http://myshop.iiitopm.ru
           SECURE_COOKIES: "1"
+          DJANGO_SUPERUSER_USERNAME: ${{ secrets.DJANGO_SUPERUSER_USERNAME }}
+          DJANGO_SUPERUSER_EMAIL: ${{ secrets.DJANGO_SUPERUSER_EMAIL }}
+          DJANGO_SUPERUSER_PASSWORD: ${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
         run: |
           sudo mkdir -p deploy/letsencrypt
           sudo bash deploy/ensure_dummy_cert.sh "$DOMAIN" "./deploy/letsencrypt"
@@ -124,6 +127,11 @@ jobs:
             sleep 2
           done
           sudo docker compose -f docker-compose.yml --profile prod exec -T web python manage.py migrate --noinput
+          sudo docker compose -f docker-compose.yml --profile prod exec -T \
+            -e DJANGO_SUPERUSER_USERNAME \
+            -e DJANGO_SUPERUSER_EMAIL \
+            -e DJANGO_SUPERUSER_PASSWORD \
+            web python manage.py ensure_admin_user
           sudo docker compose -f docker-compose.yml --profile prod exec -T web python manage.py collectstatic --noinput || true
           if [ -n "${LETSENCRYPT_EMAIL}" ]; then
             sudo docker compose -f docker-compose.yml --profile prod run --rm certbot certonly \

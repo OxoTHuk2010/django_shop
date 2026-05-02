@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 {% block title %}Edit profile | Hop & Barley{% endblock %}
 {% block content %}
-<main class="container" style="padding: 30px 0; max-width: 700px;">
-  <h1>Edit profile</h1>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="button button--primary" type="submit">Save</button>
-  </form>
+<main class="container auth-page">
+  <section class="auth-panel">
+    <p class="eyebrow">Account settings</p>
+    <h1>Edit profile</h1>
+    <form method="post" class="form-panel">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="button button--primary" type="submit">Save</button>
+    </form>
+  </section>
 </main>
 {% endblock %}

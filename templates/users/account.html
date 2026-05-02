@@ -1,26 +1,46 @@
 {% extends "base.html" %}
 {% block title %}Account | Hop & Barley{% endblock %}
 {% block content %}
-<main class="container" style="padding: 30px 0;">
-  <h1>My account</h1>
-  <p>
-    <a class="button button--secondary" href="{% url 'profile-edit' %}">Edit profile</a>
-    <a class="button button--secondary" href="{% url 'password-change' %}">Change password</a>
-  </p>
-  <p>Orders count: {{ orders_count }}</p>
-  <p>Total spent: ${{ orders_total }}</p>
-  <h2>Order history</h2>
-  {% for order in orders %}
-    <article class="product-card" style="display:block; margin-bottom: 12px; padding: 12px;">
-      <strong>Order #{{ order.id }}</strong> — {{ order.status }} — ${{ order.total_price }}
+<main class="container page-shell">
+  <div class="account-hero">
+    <div>
+      <p class="eyebrow">Signed in as {{ user.username }}</p>
+      <h1>My account</h1>
+    </div>
+    <div class="account-actions">
+      <a class="button button--secondary" href="{% url 'profile-edit' %}">Edit profile</a>
+      <a class="button button--secondary" href="{% url 'password-change' %}">Change password</a>
+    </div>
+  </div>
+
+  <section class="stats-grid">
+    <article>
+      <span>Orders</span>
+      <strong>{{ orders_count }}</strong>
+    </article>
+    <article>
+      <span>Total spent</span>
+      <strong>${{ orders_total }}</strong>
+    </article>
+  </section>
+
+  <section class="content-section">
+    <h2>Order history</h2>
+    {% for order in orders %}
+    <article class="order-card">
+      <div>
+        <strong>Order #{{ order.id }}</strong>
+        <span>{{ order.status }} | ${{ order.total_price }}</span>
+      </div>
       <ul>
         {% for item in order.items.all %}
-          <li>{{ item.product.name }} x {{ item.quantity }} (at ${{ item.price }})</li>
+        <li>{{ item.product.name }} x {{ item.quantity }} at ${{ item.price }}</li>
         {% endfor %}
       </ul>
     </article>
-  {% empty %}
-    <p>No orders yet.</p>
-  {% endfor %}
+    {% empty %}
+    <p class="empty-state">No orders yet.</p>
+    {% endfor %}
+  </section>
 </main>
 {% endblock %}

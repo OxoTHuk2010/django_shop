@@ -1,13 +1,24 @@
 {% extends "base.html" %}
 {% block title %}Checkout | Hop & Barley{% endblock %}
 {% block content %}
-<main class="container" style="padding: 30px 0;">
-  <h1>Checkout</h1>
-  <p>Order total: <strong>${{ total }}</strong></p>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="button button--primary" type="submit">Place order</button>
-  </form>
+<main class="container page-shell">
+  <div class="page-heading">
+    <p class="eyebrow">Secure checkout</p>
+    <h1>Delivery details</h1>
+  </div>
+
+  <section class="checkout-layout">
+    <form method="post" class="form-panel">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="button button--primary" type="submit">Place order</button>
+    </form>
+
+    <aside class="order-summary">
+      <p class="eyebrow">Order total</p>
+      <h2>${{ total }}</h2>
+      <p>Stock is reserved only after you place the order.</p>
+    </aside>
+  </section>
 </main>
 {% endblock %}

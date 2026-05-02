@@ -1,7 +1,12 @@
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.db.models import Sum
+from django.http import HttpResponseNotAllowed
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import FormView, TemplateView, UpdateView
 
 from orders.models import Order
@@ -17,6 +22,16 @@ class RegisterView(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+
+class LogoutPostView(View):
+    def get(self, request):
+        return HttpResponseNotAllowed(["POST"])
+
+    def post(self, request):
+        logout(request)
+        messages.success(request, "You have been signed out.")
+        return redirect("product-list")
 
 
 class AccountView(LoginRequiredMixin, TemplateView):
