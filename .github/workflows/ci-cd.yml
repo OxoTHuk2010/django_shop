@@ -96,13 +96,13 @@ jobs:
         run: sudo bash deploy/bootstrap_vm.sh
       - name: Deploy with Docker Compose
         run: |
-          sudo docker compose -f docker-compose.yml down || true
-          sudo docker compose -f docker-compose.yml up -d --build
-          until sudo docker compose -f docker-compose.yml exec -T db pg_isready -U myshop; do
+          sudo docker compose -f docker-compose.yml --profile prod down || true
+          sudo docker compose -f docker-compose.yml --profile prod up -d --build
+          until sudo docker compose -f docker-compose.yml --profile prod exec -T db pg_isready -U myshop; do
             sleep 2
           done
-          sudo docker compose -f docker-compose.yml exec -T web python manage.py migrate --noinput
-          sudo docker compose -f docker-compose.yml exec -T web python manage.py collectstatic --noinput || true
+          sudo docker compose -f docker-compose.yml --profile prod exec -T web python manage.py migrate --noinput
+          sudo docker compose -f docker-compose.yml --profile prod exec -T web python manage.py collectstatic --noinput || true
       - name: Health check
         run: |
           for i in 1 2 3 4 5 6 7 8 9 10; do

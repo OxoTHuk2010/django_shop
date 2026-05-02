@@ -1,0 +1,14 @@
+services:
+  db:
+    ports:
+      - "5432:5432"
+
+  web:
+    ports:
+      - "8000:8000"
+    environment:
+      DEBUG: "1"
+
+  nginx:
+    profiles:
+      - never

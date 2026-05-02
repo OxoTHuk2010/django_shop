@@ -5,7 +5,7 @@ E-commerce project based on technical specification: Django web, DRF API with JW
 ## Quick Start
 
 ```bash
-docker compose up --build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 ```
 
 App URL: `http://localhost:8000/`  
@@ -34,6 +34,24 @@ Stages:
 2. `lint`
 3. `test` (PostgreSQL service)
 4. `deploy` (self-hosted runner on VM, local docker compose rebuild)
+
+## Local Debug -> Prod Flow
+
+Before pushing to `main`, run local debug stack on this PC:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T web python manage.py migrate --noinput
+docker compose -f docker-compose.yml -f docker-compose.dev.yml exec -T web pytest -q
+```
+
+Stop local debug stack:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.dev.yml down
+```
+
+Production deploy is done only by GitHub pipeline using `docker-compose.yml` with `prod` profile (Nginx on port 80).
 
 ### Required GitHub Secrets
 

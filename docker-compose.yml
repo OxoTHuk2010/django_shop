@@ -21,7 +21,7 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.base
       SECRET_KEY: changeme
-      DEBUG: "0"
+      DEBUG: "${DEBUG:-0}"
       DB_NAME: myshop
       DB_USER: myshop
       DB_PASSWORD: myshop
@@ -38,6 +38,8 @@ services:
     image: nginx:1.27-alpine
     ports:
       - "80:80"
+    profiles:
+      - prod
     volumes:
       - ./deploy/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - staticfiles_data:/staticfiles:ro
