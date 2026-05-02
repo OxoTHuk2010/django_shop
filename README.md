@@ -30,23 +30,15 @@ Stages:
 1. `verify_encoding`
 2. `lint`
 3. `test` (PostgreSQL service)
-4. `build` (push image to GHCR)
-5. `deploy` (SSH deploy to VM)
+4. `deploy` (self-hosted runner on VM, local docker compose rebuild)
 
 ### Required GitHub Secrets
 
-- `DEPLOY_HOST` (set to `103.76.55.214`)
-- `DEPLOY_PORT` (usually `22`)
-- `DEPLOY_USER` (set to `oxothuk`)
-- `DEPLOY_PATH` (for example `/opt/myshop`)
-- `DEPLOY_SSH_KEY` (private key matching deployed public key)
-- `GHCR_PAT` (token with `read:packages`)
-- `DJANGO_SECRET_KEY`, `DJANGO_DEBUG`
-- `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`
+- No SSH secrets required for deploy when using self-hosted runner.
+- Runner labels expected by workflow: `self-hosted`, `Linux`, `X64`.
 
 ## Deployment Notes
 
 - VM bootstrap helper: `deploy/bootstrap_vm.sh`
-- Remote deployment script used by workflow: `deploy/remote_deploy.sh`
-- Current VM is expected to already accept key-based SSH for user `oxothuk`.
-- Deploy script uses `StrictHostKeyChecking=accept-new` and `curve25519-sha256` KEX fallback.
+- Workflow runs deploy job directly on VM runner and executes `docker compose up -d --build`.
+- `deploy/remote_deploy.sh` is kept as fallback/manual SSH deploy option.
