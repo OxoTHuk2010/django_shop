@@ -60,7 +60,19 @@ Production app container runs via `gunicorn` behind Nginx.
 - `SECRET_KEY` (required for production)
 - `ALLOWED_HOSTS` (comma-separated, example: `103.76.55.214,localhost,127.0.0.1`)
 - `CSRF_TRUSTED_ORIGINS` (comma-separated, example: `http://103.76.55.214`)
+- `SECURE_COOKIES` (`1` for HTTPS production, `0` for HTTP)
 - `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`
+
+## HTTPS Domain (myshop.iiitopm.ru)
+
+1. Create DNS `A` record:
+   - `myshop.iiitopm.ru` -> `103.76.55.214`
+2. Add GitHub secret for pipeline:
+   - `LETSENCRYPT_EMAIL`
+3. Deploy pipeline will:
+   - start stack with Nginx on `80/443`
+   - issue/renew Let's Encrypt certificate via `certbot` (webroot)
+   - reload Nginx with active certificate
 
 ## API JWT Flow
 

@@ -109,7 +109,15 @@ jobs:
       - name: Ensure Docker
         run: sudo bash deploy/bootstrap_vm.sh
       - name: Deploy with Docker Compose
+        env:
+          DOMAIN: myshop.iiitopm.ru
+          LETSENCRYPT_EMAIL: ${{ secrets.LETSENCRYPT_EMAIL }}
+          ALLOWED_HOSTS: myshop.iiitopm.ru,103.76.55.214,localhost,127.0.0.1
+          CSRF_TRUSTED_ORIGINS: https://myshop.iiitopm.ru,http://myshop.iiitopm.ru
+          SECURE_COOKIES: "1"
         run: |
+          sudo mkdir -p deploy/letsencrypt
+          sudo bash deploy/ensure_dummy_cert.sh "$DOMAIN" "./deploy/letsencrypt"
           sudo docker compose -f docker-compose.yml --profile prod down --remove-orphans || true
           sudo docker compose -f docker-compose.yml --profile prod up -d --build
           until sudo docker compose -f docker-compose.yml --profile prod exec -T db pg_isready -U myshop; do
@@ -117,6 +125,21 @@ jobs:
           done
           sudo docker compose -f docker-compose.yml --profile prod exec -T web python manage.py migrate --noinput
           sudo docker compose -f docker-compose.yml --profile prod exec -T web python manage.py collectstatic --noinput || true
+          if [ -n "${LETSENCRYPT_EMAIL}" ]; then
+            sudo docker compose -f docker-compose.yml --profile prod run --rm certbot certonly \
+              --webroot -w /var/www/certbot \
+              -d "${DOMAIN}" \
+              --email "${LETSENCRYPT_EMAIL}" \
+              --agree-tos --non-interactive --no-eff-email
+          else
+            sudo docker compose -f docker-compose.yml --profile prod run --rm certbot certonly \
+              --webroot -w /var/www/certbot \
+              -d "${DOMAIN}" \
+              --register-unsafely-without-email \
+              --agree-tos --non-interactive
+          fi
+          sudo docker compose -f docker-compose.yml --profile prod exec -T nginx nginx -s reload
+          sudo chown -R "$(id -u)":"$(id -g)" deploy/letsencrypt || true
       - name: Health check
         run: |
           for i in 1 2 3 4 5 6 7 8 9 10; do

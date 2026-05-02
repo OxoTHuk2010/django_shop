@@ -9,3 +9,4 @@ venv/
 .env.*
 staticfiles/
 media/
+deploy/letsencrypt/

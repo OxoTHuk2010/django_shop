@@ -10,5 +10,10 @@ if ! docker compose version >/dev/null 2>&1; then
   apt-get install -y docker-compose-plugin
 fi
 
+if ! command -v openssl >/dev/null 2>&1; then
+  apt-get update
+  apt-get install -y openssl
+fi
+
 systemctl enable docker
 systemctl start docker
