@@ -20,7 +20,7 @@ services:
       - "8000"
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.base
-      SECRET_KEY: changeme
+      SECRET_KEY: "${SECRET_KEY:-dev-secret-key-please-change-1234567890}"
       DEBUG: "${DEBUG:-0}"
       DB_NAME: myshop
       DB_USER: myshop
