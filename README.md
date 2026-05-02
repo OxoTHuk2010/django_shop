@@ -11,6 +11,9 @@ docker compose up --build
 App URL: `http://localhost:8000/`  
 Swagger/OpenAPI: `http://localhost:8000/api/docs/`
 
+Demo catalog data from the provided Hop-and-Barley pages is seeded automatically by migration
+`products.0002_seed_hop_and_barley_products` on a clean database.
+
 ## Encoding Policy
 
 All repository text files must be `UTF-8` without BOM:
