@@ -86,17 +86,20 @@ jobs:
     if: github.ref == 'refs/heads/main'
     environment: production
     steps:
+      - uses: actions/checkout@v4
+        with:
+          clean: false
+          fetch-depth: 1
       - name: Fix workspace permissions
         run: |
           if [ -d "$GITHUB_WORKSPACE" ]; then
             sudo chown -R "$(id -u)":"$(id -g)" "$GITHUB_WORKSPACE" || true
           fi
-      - uses: actions/checkout@v4
       - name: Ensure Docker
         run: sudo bash deploy/bootstrap_vm.sh
       - name: Deploy with Docker Compose
         run: |
-          sudo docker compose -f docker-compose.yml --profile prod down || true
+          sudo docker compose -f docker-compose.yml --profile prod down --remove-orphans || true
           sudo docker compose -f docker-compose.yml --profile prod up -d --build
           until sudo docker compose -f docker-compose.yml --profile prod exec -T db pg_isready -U myshop; do
             sleep 2
