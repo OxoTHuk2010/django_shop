@@ -15,7 +15,7 @@ services:
 
   web:
     build: .
-    command: python manage.py runserver 0.0.0.0:8000 --noreload
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60
     expose:
       - "8000"
     environment:
@@ -30,6 +30,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python manage.py check --deploy --fail-level WARNING || python manage.py check --fail-level WARNING"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     volumes:
       - staticfiles_data:/app/staticfiles
     restart: unless-stopped

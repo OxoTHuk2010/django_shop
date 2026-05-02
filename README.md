@@ -53,6 +53,14 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 ```
 
 Production deploy is done only by GitHub pipeline using `docker-compose.yml` with `prod` profile (Nginx on port 80).
+Production app container runs via `gunicorn` behind Nginx.
+
+## Production Env Vars
+
+- `SECRET_KEY` (required for production)
+- `ALLOWED_HOSTS` (comma-separated, example: `103.76.55.214,localhost,127.0.0.1`)
+- `CSRF_TRUSTED_ORIGINS` (comma-separated, example: `http://103.76.55.214`)
+- `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`
 
 ## API JWT Flow
 
