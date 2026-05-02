@@ -23,8 +23,8 @@ services:
       SECRET_KEY: "${SECRET_KEY:-dev-secret-key-please-change-1234567890}"
       DEBUG: "${DEBUG:-0}"
       SECURE_COOKIES: "${SECURE_COOKIES:-0}"
-      ALLOWED_HOSTS: "${ALLOWED_HOSTS:-103.76.55.214,localhost,127.0.0.1}"
-      CSRF_TRUSTED_ORIGINS: "${CSRF_TRUSTED_ORIGINS:-http://103.76.55.214}"
+      ALLOWED_HOSTS: "${ALLOWED_HOSTS:-myshop.iiitopm.ru,103.76.55.214,localhost,127.0.0.1}"
+      CSRF_TRUSTED_ORIGINS: "${CSRF_TRUSTED_ORIGINS:-https://myshop.iiitopm.ru,http://myshop.iiitopm.ru,http://103.76.55.214}"
       DB_NAME: myshop
       DB_USER: myshop
       DB_PASSWORD: myshop
