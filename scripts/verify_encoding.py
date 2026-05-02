@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-import sys
 
 EXTENSIONS = {".py", ".html", ".css", ".js", ".md", ".yml", ".yaml", ".toml"}
 
