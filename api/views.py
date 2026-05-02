@@ -1,5 +1,12 @@
 from django.contrib.auth.models import User
-from rest_framework import generics, permissions, status, viewsets
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+    inline_serializer,
+)
+from rest_framework import generics, permissions, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -35,6 +42,32 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     ordering_fields = ("price", "popularity", "created_at")
 
 
+@extend_schema_view(
+    create=extend_schema(
+        summary="Create order from session cart",
+        request=inline_serializer(
+            name="CreateOrderRequest",
+            fields={"shipping_address": serializers.CharField()},
+        ),
+        examples=[
+            OpenApiExample(
+                "Create order request",
+                value={"shipping_address": "Main street 1"},
+                request_only=True,
+            ),
+            OpenApiExample(
+                "Empty cart error",
+                value={"detail": "Cart is empty"},
+                response_only=True,
+                status_codes=["400"],
+            ),
+        ],
+    ),
+    cancel=extend_schema(
+        summary="Cancel own order",
+        responses={200: OrderSerializer, 400: OpenApiResponse(description="Order cannot be cancelled")},
+    ),
+)
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
@@ -65,6 +98,25 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response(self.get_serializer(order).data)
 
 
+@extend_schema_view(
+    get=extend_schema(summary="List reviews for product"),
+    post=extend_schema(
+        summary="Create review after purchase",
+        examples=[
+            OpenApiExample(
+                "Review payload",
+                value={"rating": 5, "comment": "Excellent"},
+                request_only=True,
+            ),
+            OpenApiExample(
+                "Purchase required error",
+                value={"detail": "Purchase required before review"},
+                response_only=True,
+                status_codes=["400"],
+            ),
+        ],
+    ),
+)
 class ProductReviewView(APIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -81,6 +133,37 @@ class ProductReviewView(APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+@extend_schema_view(
+    get=extend_schema(summary="Get cart snapshot"),
+    post=extend_schema(
+        summary="Add item to cart",
+        examples=[
+            OpenApiExample(
+                "Add item payload",
+                value={"product_id": 1, "quantity": 2},
+                request_only=True,
+            )
+        ],
+    ),
+    patch=extend_schema(summary="Update cart item quantity"),
+    delete=extend_schema(
+        summary="Remove item from cart",
+        examples=[
+            OpenApiExample(
+                "Missing product_id",
+                value={"detail": "product_id is required"},
+                response_only=True,
+                status_codes=["400"],
+            ),
+            OpenApiExample(
+                "Invalid product_id",
+                value={"detail": "product_id must be integer"},
+                response_only=True,
+                status_codes=["400"],
+            ),
+        ],
+    ),
+)
 class CartAPIView(APIView):
     permission_classes = [permissions.AllowAny]
 
