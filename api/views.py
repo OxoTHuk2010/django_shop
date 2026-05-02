@@ -73,6 +73,8 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
 
     def get_queryset(self):
+        if getattr(self, "swagger_fake_view", False):
+            return Order.objects.none()
         return Order.objects.filter(user=self.request.user).prefetch_related("items").order_by("-created_at")
 
     def create(self, request, *args, **kwargs):
@@ -118,6 +120,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     ),
 )
 class ProductReviewView(APIView):
+    serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, product_id: int):
@@ -176,6 +179,7 @@ class ProductReviewView(APIView):
     ),
 )
 class CartAPIView(APIView):
+    serializer_class = CartItemInputSerializer
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
