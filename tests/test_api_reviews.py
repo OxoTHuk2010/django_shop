@@ -84,4 +84,3 @@ class ProductReviewsApiTests(TestCase):
         review = Review.objects.get(product=self.product, user=self.user)
         self.assertEqual(review.rating, 5)
         self.assertEqual(review.comment, "Excellent")
-
